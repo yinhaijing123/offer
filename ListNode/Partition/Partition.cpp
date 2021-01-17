@@ -1,6 +1,7 @@
 
 /******************************************************************************************
 问题描述：Partitioning a linked list around a given value and keeping the original order
+          有一链表的头指针 ListNode* pHead，给一定值x，编写一段代码将所有小于x的结点排在其余结点之前，且不能改变原来的数据顺序，返回重新排列后的链表的头指针。
 Example：
           Input : 1->4->3->2->5->2->3, x = 3
           Output: 1->2->2->4->3->5->3
@@ -174,3 +175,63 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+///////////////////////////////////////牛客OJ////////////////////////////////////////////
+
+ListNode* partition(ListNode* pHead, int x) {
+        // write code here
+        if(pHead==NULL)
+        {
+            return NULL;
+        }
+        //1. 用两个链表分别存储大于x的节点和小于x的节点。（带头节点链表：不用考虑空链表尾插需要更新头节点的情况；尾指针：有利于尾插操作）
+        ListNode *lesshead=(ListNode *)malloc(sizeof(ListNode));
+        ListNode *lesstail=lesshead;
+        ListNode *greaterhead=(ListNode *)malloc(sizeof(ListNode));
+        ListNode *greatertail=greaterhead;
+        ListNode *cur=pHead;
+        //2.遍历链表进行尾插操作
+        while(cur)
+        {
+            if(cur->val < x)
+            {
+                lesstail->next=cur;
+                lesstail=lesstail->next;
+            }
+            else
+            {
+                greatertail->next=cur;
+                greatertail=greatertail->next;
+            }
+            cur=cur->next;
+        }
+        //此时需要给尾结点的下一个节点置空，否则他将可能会造成无法避免的错误
+        greatertail->next=NULL;
+        lesstail->next=NULL;
+        
+        //3.拼接两个链表
+		
+        //3.3可以处理3.1和3.2情况，故可以屏蔽
+        //3.1链表的值均大于x。即：小于x的链表为空
+        /*if(lesstail==lesshead)            
+        {
+            ListNode *head=greaterhead->next;
+            free(greaterhead);
+            return head;
+        }
+        //3.2链表的值均小于x。即：大于x的链表为空
+        if(greatertail==greaterhead)      
+        {
+            ListNode *head=lesshead->next;
+            free(lesshead);
+            return head;
+        }*/
+		
+        //3.3两个链表均不为空。拼接大小链表
+        lesstail->next=greaterhead->next;
+        free(greaterhead);
+        ListNode *head=lesshead->next;
+        free(lesshead);
+        return head;
+    }
